@@ -1,0 +1,7 @@
+node_modules
+dist
+*.local
+.env
+.env.base44-defaults
+.DS_Store
+*.log
