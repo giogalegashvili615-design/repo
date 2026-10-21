@@ -1,0 +1,31 @@
+# Windows packaging for the OmniChat AI desktop app.
+# Built from the source in this folder by scripts/build-exe.mjs.
+appId: com.omnichat.ai.desktop
+productName: OmniChat AI
+
+directories:
+  output: release
+
+# Everything the app runs at runtime is bundled (server.bundle.mjs + dist), so
+# no node_modules and no asar are needed inside the package.
+files:
+  - electron/**
+  - server.bundle.mjs
+  - dist/**
+  - package.json
+  # Runtime code is fully bundled into server.bundle.mjs + dist/, so the
+  # project's node_modules must not be copied into the package.
+  - "!node_modules/**"
+
+asar: false
+npmRebuild: false
+compression: normal
+
+win:
+  target:
+    - target: portable
+      arch:
+        - x64
+
+portable:
+  artifactName: OmniChat-AI-portable.exe

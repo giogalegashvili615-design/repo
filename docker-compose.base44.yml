@@ -1,0 +1,79 @@
+# Base44 sandbox environment for the OmniChat AI desktop app.
+#
+# The repository itself is a pacman package repository; this compose file only
+# runs the app that lives in cloud-ai-agent/ so it can be previewed and packaged
+# from the sandbox. It is development-oriented on purpose: source is bind
+# mounted and runs from the cloned source, never from a prebuilt image.
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/base44-node-bun.Dockerfile
+    image: base44-node-bun
+    working_dir: /app
+    # tsx watch picks up edits to server.ts; frontend HMR is handled by the
+    # Vite dev server mounted as Express middleware by server.ts.
+    command:
+      - sh
+      - -ec
+      - bun install --frozen-lockfile && exec npx tsx watch server.ts
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - BASE44_PREVIEW_MODE
+      - BASE44_SANDBOX_HOST_DOMAIN
+      # Vite >= 6.1 appends this to server.allowedHosts; the preview proxy
+      # forwards Host: <port>-<sandbox id>.${BASE44_SANDBOX_HOST_DOMAIN}.
+      - __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=.${BASE44_SANDBOX_HOST_DOMAIN}
+    # Platform-provided secrets (last entry wins over anything above).
+    env_file:
+      - /run/base44/app.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./cloud-ai-agent:/app
+      - omnichat_web_deps:/app/node_modules
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/api/config').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 120s
+    restart: on-failure
+    labels:
+      base44.project: OmniChat AI
+      base44.kind: web
+      base44.port: 3000
+
+  # One-shot Windows build. Not started by `up`; run it explicitly:
+  #   docker compose -f docker-compose.base44.yml --profile exe run --rm exe-builder
+  exe-builder:
+    build:
+      context: .
+      dockerfile: docker/base44-node-bun.Dockerfile
+    image: base44-node-bun
+    working_dir: /app
+    profiles: ["exe"]
+    command:
+      - sh
+      - -ec
+      - bun install --frozen-lockfile && exec node scripts/build-exe.mjs
+    environment:
+      - BASE44_PREVIEW_MODE
+    volumes:
+      - ./cloud-ai-agent:/app
+      - omnichat_builder_deps:/app/node_modules
+      # Keeps the downloaded Electron/NSIS toolchain between builds.
+      - omnichat_builder_cache:/root/.cache
+    labels:
+      base44.project: OmniChat AI Windows build
+      base44.kind: worker
+
+volumes:
+  omnichat_web_deps:
+  omnichat_builder_deps:
+  omnichat_builder_cache:

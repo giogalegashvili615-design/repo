@@ -1,0 +1,17 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "GEMINI_API_KEY",
+      "description": "Google Gemini API key (https://aistudio.google.com/apikey). Required for the Gemini models to answer in the app; the Anthropic models in the model picker need ANTHROPIC_API_KEY instead.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "description": "Anthropic Claude API key (https://console.anthropic.com/settings/keys). Optional: only needed for the Claude models in the model picker.",
+      "requiredAtBoot": false
+    }
+  ]
+}

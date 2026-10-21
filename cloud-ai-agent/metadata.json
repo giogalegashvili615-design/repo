@@ -1,0 +1,8 @@
+{
+  "name": "cloud-AI- Gemini & Anthropic Multi-Model Agent",
+  "description": "ChatGPT-style AI agent with free Gemini 3.8 Flash chatting, live Google search grounding, code sandbox previews, and Anthropic Claude integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

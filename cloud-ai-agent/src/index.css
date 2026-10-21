@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #1a1a1c;
+    --bg-secondary: #131416;
+    --bg-card: #202124;
+    --bg-pill: #28292d;
+    --bg-hover: #2b2d31;
+    --border-subtle: #2b2d31;
+    --border-strong: #36383e;
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #757982;
+  }
+
+  html.light {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f7f8;
+    --bg-card: #ffffff;
+    --bg-pill: #ffffff;
+    --bg-hover: #ececf1;
+    --border-subtle: #e5e7eb;
+    --border-strong: #d1d5db;
+    --text-primary: #0d0d0d;
+    --text-secondary: #4b5563;
+    --text-muted: #8e8ea0;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Custom sleek scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3e4249;
+    border-radius: 9999px;
+  }
+  html.light ::-webkit-scrollbar-thumb {
+    background: #c5c5d2;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #565a63;
+  }
+  html.light ::-webkit-scrollbar-thumb:hover {
+    background: #9fa1ad;
+  }
+}
+
+/* Smooth message slide in & typing animation */
+@keyframes messageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cursorBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes modalPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-message-enter {
+  animation: messageEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-modal-pop {
+  animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-cursor-blink {
+  animation: cursorBlink 0.9s infinite ease-in-out;
+}

@@ -1,0 +1,115 @@
+import { AgentPersona, ModelConfig } from '../types';
+
+export const AVAILABLE_MODELS: ModelConfig[] = [
+  {
+    id: 'gemini-3.1-flash-lite',
+    name: 'gemini-flash-latest',
+    displayName: 'Cloud AI · gemini-flash-latest',
+    provider: 'gemini',
+    badge: 'Free & Fast',
+    description: 'Blazing fast, high-uptime free chatting with instant response times.',
+    isFree: true,
+    supportsSearch: true,
+    supportsThinking: false,
+  },
+  {
+    id: 'gemini-3.1-flash-lite',
+    name: 'gemini-flash-lite',
+    displayName: 'Cloud AI · gemini-flash-lite',
+    provider: 'gemini',
+    badge: 'Ultra Fast',
+    description: 'Minimal latency, optimized for rapid text operations and back-and-forth Q&A.',
+    isFree: true,
+    supportsSearch: true,
+    supportsThinking: false,
+  },
+  {
+    id: 'gemini-4-argon',
+    name: 'gemini-pro-reasoning',
+    displayName: 'Cloud AI · gemini-4-argon',
+    provider: 'gemini',
+    badge: 'Deep Reasoning',
+    description: 'Flagship reasoning model for complex STEM, coding, and multi-step logic.',
+    isFree: true,
+    supportsSearch: true,
+    supportsThinking: true,
+  },
+  {
+    id: 'claude-3-7-sonnet-20250219',
+    name: 'claude-3-7-sonnet',
+    displayName: 'Anthropic · claude-3-7-sonnet',
+    provider: 'anthropic',
+    badge: 'Extended Thinking',
+    description: 'Anthropic flagship model featuring hybrid reasoning and coding mastery.',
+    isFree: false,
+    supportsSearch: false,
+    supportsThinking: true,
+  },
+  {
+    id: 'claude-3-5-sonnet-20241022',
+    name: 'claude-3-5-sonnet',
+    displayName: 'Anthropic · claude-3-5-sonnet',
+    provider: 'anthropic',
+    badge: 'Industry Coder',
+    description: 'Top-tier code generation and complex contextual understanding.',
+    isFree: false,
+    supportsSearch: false,
+    supportsThinking: false,
+  },
+  {
+    id: 'claude-3-5-haiku-20241022',
+    name: 'claude-3-5-haiku',
+    displayName: 'Anthropic · claude-3-5-haiku',
+    provider: 'anthropic',
+    badge: 'Fast Claude',
+    description: 'Lightweight Claude model for quick summaries and concise drafts.',
+    isFree: false,
+    supportsSearch: false,
+    supportsThinking: false,
+  },
+];
+
+export const AGENT_PERSONAS: AgentPersona[] = [
+  {
+    id: 'general',
+    name: 'Coucou',
+    icon: 'Bot',
+    description: 'Helpful, concise, friendly conversational AI assistant.',
+    systemPrompt:
+      'You are Cloud AI, a helpful, intelligent, concise, and knowledgeable AI assistant. You answer clearly, use markdown formatting effectively, structure complex answers with numbered points or bullet points, and provide accurate, actionable information.',
+    starterPrompts: [
+      'Tell me about the top 5 historic landmarks to visit in Paris',
+      'Explain quantum computing in simple terms with everyday analogies',
+      'Compare modern frontend frameworks: React vs Svelte vs Vue',
+      'Write a clean TypeScript debounce utility with cancel method',
+    ],
+  },
+  {
+    id: 'coder',
+    name: 'Code Architect',
+    icon: 'Code',
+    description: 'Full-stack software engineer specializing in clean code and system design.',
+    systemPrompt:
+      'You are a Principal Software Architect and Lead Engineer. You write clean, production-grade, modular, self-contained code with best practices, TypeScript types, and comprehensive comments.',
+    starterPrompts: [
+      'Write a reactive TypeScript state machine for a multiplayer game lobby',
+      'Build a modern responsive Dashboard component with charts using Tailwind CSS',
+      'Write an interactive HTML/JS canvas particle animation demo',
+      'Design a resilient event-driven microservices architecture',
+    ],
+  },
+  {
+    id: 'researcher',
+    name: 'Deep Analyst',
+    icon: 'Compass',
+    description: 'Evidence-based investigator that synthesizes complex subjects with nuance.',
+    systemPrompt:
+      'You are a Senior Research Analyst. Provide comprehensive, rigorously structured analysis. Present multiple perspectives, identify underlying mechanisms, and highlight counterarguments.',
+    starterPrompts: [
+      'Conduct a comparative analysis of solid-state battery technology vs lithium-ion',
+      'Analyze the economic implications of automated agent workflows on software development',
+      'Synthesize current clinical trials and mechanisms for mRNA cancer vaccines',
+      'Break down the geopolitical dynamics of advanced semiconductor fabrication',
+    ],
+  },
+];
