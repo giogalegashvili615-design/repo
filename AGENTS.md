@@ -49,6 +49,10 @@ build without the key still works, the user then pastes their own in Settings.
 
     docker compose -f docker-compose.base44.yml --profile exe run --rm exe-builder
 
+Run it in the foreground with `--rm`: a detached build (`run -d`) leaves the exited
+container behind, and the platform's service check then reports `exe-builder` as a
+failed service even though the build succeeded.
+
 That runs `scripts/build-exe.mjs`: `vite build` → `scripts/build-server.mjs` (bundles
 `server.ts` into one `server.bundle.mjs`) → electron-builder, producing two x64
 artifacts:
