@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="OmniChat AI">
+  <rect width="64" height="64" rx="14" fill="#1a1a1c" />
+  <path d="M16 17h32a7 7 0 0 1 7 7v15a7 7 0 0 1-7 7H31l-12 9v-9h-3a7 7 0 0 1-7-7V24a7 7 0 0 1 7-7z" fill="#f3f4f6" />
+  <circle cx="24" cy="31.5" r="3.2" fill="#1a1a1c" />
+  <circle cx="32" cy="31.5" r="3.2" fill="#1a1a1c" />
+  <circle cx="40" cy="31.5" r="3.2" fill="#1a1a1c" />
+</svg>
