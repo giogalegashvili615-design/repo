@@ -2,7 +2,7 @@ import { AgentPersona, ModelConfig } from '../types';
 
 export const AVAILABLE_MODELS: ModelConfig[] = [
   {
-    id: 'gemini-3.1-flash-lite',
+    id: 'gemini-flash-latest',
     name: 'gemini-flash-latest',
     displayName: 'Cloud AI · gemini-flash-latest',
     provider: 'gemini',
@@ -13,7 +13,7 @@ export const AVAILABLE_MODELS: ModelConfig[] = [
     supportsThinking: false,
   },
   {
-    id: 'gemini-3.1-flash-lite',
+    id: 'gemini-flash-lite-latest',
     name: 'gemini-flash-lite',
     displayName: 'Cloud AI · gemini-flash-lite',
     provider: 'gemini',

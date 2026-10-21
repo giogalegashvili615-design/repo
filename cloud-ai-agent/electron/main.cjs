@@ -6,6 +6,7 @@
  * app in a native window, so the packaged .exe needs no Node.js install.
  */
 const { app, BrowserWindow, shell } = require('electron');
+const fs = require('fs');
 const net = require('net');
 const path = require('path');
 const { pathToFileURL } = require('url');
@@ -51,6 +52,23 @@ async function waitForServer(url, timeoutMs = 30000) {
 }
 
 /**
+ * Keys embedded while packaging (scripts/build-exe.mjs writes
+ * electron/bundled-env.json into the app), so an installed app can chat right
+ * away. A `.env` next to the .exe and a key entered in the Settings dialog both
+ * take precedence over these.
+ */
+function loadBundledEnv() {
+  try {
+    const bundled = JSON.parse(fs.readFileSync(path.join(__dirname, 'bundled-env.json'), 'utf8'));
+    for (const [key, value] of Object.entries(bundled)) {
+      if (value && !process.env[key]) process.env[key] = String(value);
+    }
+  } catch {
+    // this build carries no embedded keys
+  }
+}
+
+/**
  * Optional .env next to the .exe, so a user can keep GEMINI_API_KEY /
  * ANTHROPIC_API_KEY outside the app (the Settings dialog also accepts keys).
  */
@@ -81,6 +99,7 @@ async function resolveAppUrl() {
     return DEV_URL;
   }
 
+  loadBundledEnv();
   loadEnvFile();
   const port = await findFreePort(START_PORT);
   process.env.PORT = String(port);

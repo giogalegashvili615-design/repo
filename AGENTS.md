@@ -32,6 +32,19 @@ Keys: `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` are delivered on `/run/base44/app.e
 then report "key is not configured"; a key can also be entered in the app's own
 Settings dialog, or placed in a `.env` next to the desktop `.exe`.
 
+Chat must produce real streamed model output: a canned, empty or "not configured"
+answer means no key reached the server. The default model is the `gemini-flash-latest`
+alias (3.8 Flash at the time of writing), and `server.ts` retries the other current
+Flash models before giving up — the model ids in `src/constants/models.ts` must be ids
+the API actually serves (`curl "$GEMINI_URL/v1beta/models?key=…"` lists them).
+
+Desktop builds embed the key that is present while packaging: `scripts/build-exe.mjs`
+writes `electron/bundled-env.json` (git-ignored, deleted again after packaging) into
+the app package and `electron/main.cjs` loads it before the user's own `.env`, so a
+downloaded `.exe`/installer chats with no setup. Anyone holding the artifact can
+extract that key, so share the file only with people you would give the key to; a
+build without the key still works, the user then pastes their own in Settings.
+
 ## Building the Windows executable
 
     docker compose -f docker-compose.base44.yml --profile exe run --rm exe-builder
@@ -90,6 +103,11 @@ Non-obvious points:
         curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:4123/api/config'
       # expect 200; dbus errors in the log are container noise
 
+- Whether a packaged build really carries a key is checkable without printing it: build
+  the Linux variant of the same package, run it under Xvfb and read `hasGeminiKey` from
+  its own `/api/config` (regenerate `electron/bundled-env.json` from the container env
+  first, and delete it again afterwards) — see the smoke test above, plus
+  `curl -sN -X POST http://127.0.0.1:4123/api/chat` for a real streamed answer.
 - The installer can only be checked structurally in the sandbox: the packaging run
   succeeds, electron-builder's own `nsisValidation` rejects a truncated installer, and
   the file downloads from `/downloads/`. Running it here under Wine

@@ -66,6 +66,10 @@ services:
       - bun install --frozen-lockfile && exec node scripts/build-exe.mjs
     environment:
       - BASE44_PREVIEW_MODE
+    # The packaged desktop app embeds GEMINI_API_KEY (see scripts/build-exe.mjs)
+    # so it can chat without the user pasting a key first.
+    env_file:
+      - /run/base44/app.env
     volumes:
       - ./cloud-ai-agent:/app
       - omnichat_builder_deps:/app/node_modules

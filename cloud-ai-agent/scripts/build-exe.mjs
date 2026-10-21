@@ -14,7 +14,7 @@
  *   bun install && node scripts/build-exe.mjs
  */
 import { spawn } from 'node:child_process';
-import { readdir } from 'node:fs/promises';
+import { readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build as viteBuild } from 'vite';
@@ -39,6 +39,19 @@ await viteBuild();
 console.log('== 2/3 bundling the local API server ==');
 await bundleServer();
 
+// Model keys available to the build (GEMINI_API_KEY from the Base44 secrets) are
+// embedded into the app package, so the downloaded .exe can chat without the
+// user pasting a key. The file lives inside the package, not the repository, and
+// is deleted again below.
+const bundledEnvPath = path.join(appRoot, 'electron', 'bundled-env.json');
+const embeddedKeys = ['GEMINI_API_KEY', 'ANTHROPIC_API_KEY'].filter((name) => process.env[name]);
+await rm(bundledEnvPath, { force: true });
+if (embeddedKeys.length > 0) {
+  const bundled = Object.fromEntries(embeddedKeys.map((name) => [name, process.env[name]]));
+  await writeFile(bundledEnvPath, JSON.stringify(bundled, null, 2));
+  console.log(`== embedding ${embeddedKeys.join(', ')} into the desktop build ==`);
+}
+
 console.log('== 3/3 packaging the Windows executable (electron-builder) ==');
 const builderBin = path.join(
   appRoot,
@@ -46,7 +59,11 @@ const builderBin = path.join(
   '.bin',
   process.platform === 'win32' ? 'electron-builder.cmd' : 'electron-builder'
 );
-await run(builderBin, ['--win', '--x64', '--config', 'electron-builder.yml', '--publish', 'never']);
+try {
+  await run(builderBin, ['--win', '--x64', '--config', 'electron-builder.yml', '--publish', 'never']);
+} finally {
+  await rm(bundledEnvPath, { force: true });
+}
 
 const artifacts = (await readdir(releaseDir)).filter((name) => name.endsWith('.exe'));
 if (artifacts.length === 0) {

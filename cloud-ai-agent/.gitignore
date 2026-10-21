@@ -7,3 +7,5 @@ coverage/
 *.log
 .env*
 !.env.example
+# Written by scripts/build-exe.mjs while packaging, removed again afterwards.
+electron/bundled-env.json

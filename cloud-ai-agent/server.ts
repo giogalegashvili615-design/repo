@@ -37,11 +37,11 @@ app.get('/api/config', (_req, res) => {
   res.json({
     hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
     hasAnthropicKey: Boolean(process.env.ANTHROPIC_API_KEY),
-    defaultGeminiModel: 'gemini-3.8-flash',
+    defaultGeminiModel: 'gemini-flash-latest',
     supportedModels: [
       {
-        id: 'gemini-3.8-flash',
-        name: 'Gemini 3.8 Flash',
+        id: 'gemini-flash-latest',
+        name: 'Gemini Flash (latest)',
         provider: 'gemini',
         badge: 'Free & Fast',
         description: 'Blazing fast, multimodality & Google Search Grounding. Zero setup.',
@@ -50,8 +50,8 @@ app.get('/api/config', (_req, res) => {
         supportsThinking: false,
       },
       {
-        id: 'gemini-3.1-flash-lite',
-        name: 'Gemini 3.1 Flash-Lite',
+        id: 'gemini-flash-lite-latest',
+        name: 'Gemini Flash-Lite (latest)',
         provider: 'gemini',
         badge: 'Ultra Fast',
         description: 'Super lightweight & optimized for high-speed queries.',
@@ -107,7 +107,7 @@ app.get('/api/config', (_req, res) => {
 app.post('/api/chat', async (req, res) => {
   const {
     provider = 'gemini',
-    model = 'gemini-3.8-flash',
+    model = 'gemini-flash-latest',
     messages = [],
     systemInstruction,
     enableSearch = false,
@@ -191,18 +191,13 @@ app.post('/api/chat', async (req, res) => {
         sendEvent('status', { message: 'Searching Google for real-time sources...' });
       }
 
-      // Map models to active fast endpoint to avoid 503 high-demand retry stalls
-      const resolvedModel =
-        model === 'gemini-flash-latest' || model === 'gemini-3.8-flash' || model === 'gemini-3.1-flash-lite'
-          ? 'gemini-3-flash-preview'
-          : model;
-
-      // Model fallback chain: try resolved model first, then resilient backups
+      // Model fallback chain: the model the user picked first, then the current
+      // Flash models, so one overloaded model cannot break the whole chat.
       const modelChain = [
-        resolvedModel,
-        'gemini-3-flash-preview',
-        'gemini-3.5-flash',
-        'gemini-3.6-flash',
+        model,
+        'gemini-flash-latest',
+        'gemini-3.8-flash',
+        'gemini-flash-lite-latest',
       ].filter((mName, idx, arr) => arr.indexOf(mName) === idx);
 
       let lastError: any = null;
