@@ -2,7 +2,8 @@
  * Builds the Windows desktop executable for OmniChat AI:
  *   1. vite build        -> dist/             (frontend)
  *   2. bundleServer()    -> server.bundle.mjs (API server, single file)
- *   3. electron-builder  -> release/OmniChat-AI-portable.exe
+ *   3. electron-builder  -> release/OmniChat-AI-Setup-<version>.exe (installer)
+ *                           release/OmniChat-AI-portable.exe       (no install)
  *
  * The artifact in release/ is git-ignored and is served by the running app at
  * /downloads/<file> (see server.ts), so it can be fetched from the preview.

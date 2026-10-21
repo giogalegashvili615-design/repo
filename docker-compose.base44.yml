@@ -52,10 +52,12 @@ services:
   # One-shot Windows build. Not started by `up`; run it explicitly:
   #   docker compose -f docker-compose.base44.yml --profile exe run --rm exe-builder
   exe-builder:
+    # Separate image: packaging Windows binaries needs Wine, which the preview
+    # service should not carry (see docker/base44-exe-builder.Dockerfile).
     build:
       context: .
-      dockerfile: docker/base44-node-bun.Dockerfile
-    image: base44-node-bun
+      dockerfile: docker/base44-exe-builder.Dockerfile
+    image: base44-exe-builder
     working_dir: /app
     profiles: ["exe"]
     command:
@@ -69,6 +71,8 @@ services:
       - omnichat_builder_deps:/app/node_modules
       # Keeps the downloaded Electron/NSIS toolchain between builds.
       - omnichat_builder_cache:/root/.cache
+      # Wine prefix: keeps first-run initialisation between builds.
+      - omnichat_wine_prefix:/root/.wine
     labels:
       base44.project: OmniChat AI Windows build
       base44.kind: worker
@@ -77,3 +81,4 @@ volumes:
   omnichat_web_deps:
   omnichat_builder_deps:
   omnichat_builder_cache:
+  omnichat_wine_prefix:

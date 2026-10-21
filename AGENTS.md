@@ -37,10 +37,28 @@ Settings dialog, or placed in a `.env` next to the desktop `.exe`.
     docker compose -f docker-compose.base44.yml --profile exe run --rm exe-builder
 
 That runs `scripts/build-exe.mjs`: `vite build` → `scripts/build-server.mjs` (bundles
-`server.ts` into one `server.bundle.mjs`) → electron-builder →
-`release/OmniChat-AI-portable.exe` (~100 MB, x64 portable, no installer needed).
-The artifact is git-ignored, and the running dev server serves it for download at
-`/downloads/OmniChat-AI-portable.exe` (route added in `server.ts`).
+`server.ts` into one `server.bundle.mjs`) → electron-builder, producing two x64
+artifacts:
+
+- `release/OmniChat-AI-Setup-<version>.exe` — the installer (NSIS, per-user, assisted:
+  folder choice, desktop/start-menu shortcuts, uninstall entry). Version comes from
+  `package.json`.
+- `release/OmniChat-AI-portable.exe` — single file that runs without installing.
+
+They are git-ignored and the running dev server serves them at
+`/downloads/<name>` (route added in `server.ts`), so no rebuild is needed after a
+new artifact lands: `express.static` reads the folder per request.
+
+Building the installer runs Windows tools (makensis, and then the installer itself
+once to emit its uninstaller) through Wine, so `exe-builder` uses its own image,
+`docker/base44-exe-builder.Dockerfile` — the shared toolchain plus Debian `wine` and
+`wine32:i386`. Rebuild it after changing that Dockerfile:
+
+    docker compose -f docker-compose.base44.yml --profile exe build exe-builder
+
+electron-builder's bundled Wine 11 toolset does not work in this image (`wine: failed
+to load .../lib/wine/x86_64-unix/ntdll.dll error c0000135`), so `electron-builder.yml`
+asks for no wine toolset and the `wine` on PATH is used instead.
 
 Non-obvious points:
 
@@ -50,7 +68,8 @@ Non-obvious points:
 - The server bundle has to be ESM. Bundling `server.ts` to CommonJS fails because
   `import.meta.url` (used for `__dirname`) is empty in CJS output.
 - `asar` is off so Electron's ESM loader can import `server.bundle.mjs` from disk.
-- electron-builder produces the Windows portable .exe on Linux without Wine.
+- The portable .exe needs no Wine; the NSIS installer does (see above), which is why
+  the packaging service has its own image.
 - Never publish the built artifact into `public/`: `vite build` copies `public/`
   into `dist/`, which would embed the .exe inside the app payload.
 - The portable `.exe` writes its own copy of the app to a temp folder at run time;
@@ -71,5 +90,10 @@ Non-obvious points:
         curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:4123/api/config'
       # expect 200; dbus errors in the log are container noise
 
+- The installer can only be checked structurally in the sandbox: the packaging run
+  succeeds, electron-builder's own `nsisValidation` rejects a truncated installer, and
+  the file downloads from `/downloads/`. Running it here under Wine
+  (`OmniChat-AI-Setup-<version>.exe /S /D=C:\dir`, with and without Xvfb) hangs or exits
+  2 without installing anything, so installation itself has to be checked on Windows.
 - Known pre-existing issue in the imported UI code: the browser console logs a React
   "two children with the same key" error. It is not caused by the sandbox setup.

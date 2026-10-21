@@ -21,11 +21,36 @@ asar: false
 npmRebuild: false
 compression: normal
 
+# makensis and the uninstaller step are Windows binaries: on Linux electron-builder
+# runs them through the `wine` on PATH, which docker/base44-exe-builder.Dockerfile
+# installs. (electron-builder's bundled Wine 11 toolset is beta and fails to load
+# its own PE libraries in this image, so it is not requested here.)
+
 win:
   target:
-    - target: portable
+    - target: nsis # real installer: Add/Remove Programs entry, shortcuts
       arch:
         - x64
+    - target: portable # single file that runs without installing
+      arch:
+        - x64
+
+# Assisted installer: the user chooses the folder, and it installs per user so
+# Windows shows no administrator prompt. Shortcuts and an uninstall entry are
+# created; the version in the file name is package.json's version.
+nsis:
+  artifactName: OmniChat-AI-Setup-${version}.exe
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  # No elevate.exe: the installer is per-user, so it never needs administrator
+  # rights. Building without it also keeps packaging runnable on Linux, where
+  # stamping that helper would require Wine.
+  packElevateHelper: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: OmniChat AI
+  uninstallDisplayName: OmniChat AI
 
 portable:
   artifactName: OmniChat-AI-portable.exe
