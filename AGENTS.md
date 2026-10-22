@@ -117,5 +117,18 @@ Non-obvious points:
   the file downloads from `/downloads/`. Running it here under Wine
   (`OmniChat-AI-Setup-<version>.exe /S /D=C:\dir`, with and without Xvfb) hangs or exits
   2 without installing anything, so installation itself has to be checked on Windows.
-- Known pre-existing issue in the imported UI code: the browser console logs a React
-  "two children with the same key" error. It is not caused by the sandbox setup.
+- The React "two children with the same key" console error came from duplicate model ids
+  in `src/constants/models.ts` (two entries shared `gemini-3.1-flash-lite`); with the ids
+  fixed the console is clean, so a re-appearance means a duplicated id or list key again.
+- Chat answers or reports an error, but never sits silent: `@google/genai` retried
+  overloaded models internally for 60-90 s (observed as 429 "exceeded your current quota"
+  on `gemini-flash-latest` / `gemini-3.8-flash` on the free tier), which looked like a
+  dead chat. `server.ts` now sends `retryOptions: { attempts: 1 }`, waits at most
+  `FIRST_CHUNK_TIMEOUT_MS` (6 s) for a model's first chunk and `SINGLE_CALL_TIMEOUT_MS`
+  (10 s) for the last single-shot attempt, then falls through the model chain. On the free
+  tier the flagship Flash models can stay quota-limited for a while and the chat then
+  answers from the Flash-Lite fallback; enable billing on the API key (or wait for the
+  quota window) to get the flagship models again.
+- The `/downloads` route is mounted unconditionally. `release/` is git-ignored, so a fresh
+  sandbox has no such folder; an `existsSync` check at boot left the route missing for the
+  whole session, and downloading returned the Vite dev `index.html` instead of the `.exe`.

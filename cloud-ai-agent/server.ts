@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
@@ -12,6 +11,22 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
+// How long one model may stay silent before the chat tries the next model, and
+// how long the last single-shot attempt may take.
+const FIRST_CHUNK_TIMEOUT_MS = 6000;
+const SINGLE_CALL_TIMEOUT_MS = 10000;
+
+// Rejects if the wrapped call does not settle in time, so a stalled Gemini
+// request can never leave the chat waiting with nothing on screen.
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return Promise.race([
+    promise,
+    new Promise<never>((_resolve, reject) => {
+      timer = setTimeout(() => reject(new Error(message)), ms);
+    }),
+  ]).finally(() => clearTimeout(timer));
+}
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -28,6 +43,10 @@ function getGeminiClient(customKey?: string) {
       headers: {
         'User-Agent': 'aistudio-build',
       },
+      // One attempt per model: the SDK's own retry loop keeps a chat silent for
+      // over a minute when a model is overloaded, while the model chain below
+      // can move on to the next model straight away.
+      retryOptions: { attempts: 1 },
     },
   });
 }
@@ -217,7 +236,7 @@ app.post('/api/chat', async (req, res) => {
               config: Object.keys(currentConfig).length > 0 ? currentConfig : undefined,
             });
 
-            for await (const chunk of responseStream) {
+            const handleChunk = (chunk: any) => {
               const text = chunk.text;
               if (text) {
                 hasStreamedAnyDelta = true;
@@ -240,6 +259,20 @@ app.post('/api/chat', async (req, res) => {
                   }
                 }
               }
+            };
+
+            // Wait only a short while for the first chunk: an overloaded model can
+            // otherwise stay silent for minutes while the request hangs, and the
+            // user would stare at an empty answer instead of the fallback model.
+            const iterator = responseStream[Symbol.asyncIterator]();
+            const first = await withTimeout(
+              iterator.next(),
+              FIRST_CHUNK_TIMEOUT_MS,
+              `${modelToTry} did not answer within ${FIRST_CHUNK_TIMEOUT_MS}ms`
+            );
+
+            for (let chunk = first; !chunk.done; chunk = await iterator.next()) {
+              handleChunk(chunk.value);
             }
           };
 
@@ -276,10 +309,14 @@ app.post('/api/chat', async (req, res) => {
       // If all streaming attempts failed, try a non-streaming single call fallback
       if (!hasStreamedAnyDelta) {
         try {
-          const nonStreamRes = await ai.models.generateContent({
-            model: 'gemini-3.1-flash-lite',
-            contents: sanitizedContents,
-          });
+          const nonStreamRes = await withTimeout(
+            ai.models.generateContent({
+              model: 'gemini-3.1-flash-lite',
+              contents: sanitizedContents,
+            }),
+            SINGLE_CALL_TIMEOUT_MS,
+            `single-shot answer did not complete within ${SINGLE_CALL_TIMEOUT_MS}ms`
+          );
           if (nonStreamRes.text) {
             sendEvent('delta', { text: nonStreamRes.text });
             hasStreamedAnyDelta = true;
@@ -435,10 +472,11 @@ app.post('/api/chat', async (req, res) => {
 
 // Desktop builds made by scripts/build-exe.mjs live in the git-ignored
 // release/ folder; expose them for download while the app runs locally.
-const desktopBuildsPath = path.resolve(__dirname, 'release');
-if (fs.existsSync(desktopBuildsPath)) {
-  app.use('/downloads', express.static(desktopBuildsPath));
-}
+// Mounted unconditionally: the folder does not exist until the packaging run
+// has happened (it is git-ignored), and express.static just falls through to the
+// app when it is missing. Checking once at boot left the route missing for the
+// rest of the session whenever the app started before the first build.
+app.use('/downloads', express.static(path.resolve(__dirname, 'release')));
 
 // Development vs Production serving
 async function startServer() {
