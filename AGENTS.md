@@ -15,8 +15,9 @@ artifacts for the sandbox preview.
   `apk add rsvg-convert && rsvg-convert -w 512 -h 512 icon.svg -o icon.png` (alpine already has `librsvg` but not
   the `rsvg-convert` package) and is what the download page shows.
 - App name: `android:label="Notes"` in the manifest; the APK is `notes.apk`.
-- Deliverable: `glass_notes/dist/notes.apk`, listed by `glass_notes/dist/index.html` and served by the nginx
-  `web` service on host port 3000. The previous Cluck & Dash APK stays downloadable at `/cluck_and_dash.apk`
+- Deliverable: `glass_notes/dist/notes.apk`, served by the nginx `web` service on host port 3000.
+  `glass_notes/dist/index.html` is the landing page: a card per build (Assistant, Notes, Cluck & Dash) each with
+  its own `/assistant.apk`, `/notes.apk`, `/cluck_and_dash.apk` download link. The previous Cluck & Dash APK stays downloadable at `/cluck_and_dash.apk`
   (nginx `alias` to `cluck_and_dash/dist`, mounted at `/srv/cluck` — a file bind-mount into the read-only nginx
   root fails with "read-only file system", mount a directory instead).
 
