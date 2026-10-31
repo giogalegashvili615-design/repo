@@ -57,6 +57,27 @@ $BT/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:an
   `aapt dump badging` (`com.example.glassnotes`, minSdk 26, targetSdk 35, launchable `MainActivity`) and
   `apksigner verify --print-certs`.
 
+## GlassAssistant (native Android, Jetpack Compose chat UI)
+
+- Source: `glass_assistant/` — Kotlin + Compose (`MainActivity.kt` UI, `Gemini.kt` REST call to
+  `generativelanguage.googleapis.com`). The zip as delivered did **not** compile: `MainActivity.kt` used
+  `MutableInteractionSource` without `import androidx.compose.foundation.interaction.MutableInteractionSource`
+  (fixed in the committed source).
+- No API key is baked in: the app reads the Gemini key from its own *Settings* screen (SharedPreferences `cfg`)
+  and answers in "Demo mode" while it is blank. Keep it that way — never embed `GEMINI_API_KEY` in the APK.
+- Icon added the same way as the Notes app (`res/drawable/ic_launcher_{background,foreground,monochrome}.xml` +
+  `res/mipmap-anydpi-v26/ic_launcher{,_round}.xml`): the glass sphere from the app's empty state. Manifest label
+  `Assistant`, applicationId `com.example.glassassistant`, minSdk 26, targetSdk 35.
+- Build: same toolchain as GlassNotes — `flutter-android-builder` + Gradle **8.9** + the `-Dorg.gradle.jvmargs`
+  heap flag (AGP 8.7.3 needs Gradle ≥ 8.9 and dies on the default heap). Copy the source to a host-mounted work
+  dir, `assembleRelease`, `zipalign`, `apksigner sign` with `/tmp/glassbuild/debug.keystore`.
+- Deliverable: `glass_assistant/dist/assistant.apk` (10.7 MB, debug-key signed), served at `/assistant.apk` by
+  the nginx `web` service — `location = /assistant.apk` aliased to `/srv/assistant`, bind-mounted from
+  `glass_assistant/dist` (directories, not single files into the read-only root).
+- No emulator here: verified with `aapt dump badging` (package, label `Assistant`, minSdk 26, targetSdk 35,
+  launchable `MainActivity`, adaptive icon present) and `apksigner verify`. Runtime behaviour (Gemini round-trip,
+  glass tab bar) is not exercised.
+
 ## Cluck & Dash 3D (Flutter game)
 
 - Source: `cluck_and_dash/` (`lib/*.dart`, `pubspec.yaml`). The zip as delivered did **not** compile:
@@ -108,7 +129,7 @@ Notes learned the hard way:
 
 `curl -sS http://localhost:3000/` must return the download page and
 `curl -sSI http://localhost:3000/notes.apk` a `200` with `Content-Type: application/vnd.android.package-archive`
-(`/cluck_and_dash.apk` must still answer the same way). Check the served bytes match the committed file:
+(`/cluck_and_dash.apk` and `/assistant.apk` must still answer the same way). Check the served bytes match the committed file:
 
 ```bash
 curl -sS -o /tmp/dl.apk http://localhost:3000/notes.apk && sha256sum /tmp/dl.apk glass_notes/dist/notes.apk
