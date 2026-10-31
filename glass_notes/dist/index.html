@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GlassNotes — Android build</title>
+<style>
+  :root { color-scheme: light dark; --accent: #F5A800; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f2f2f7; color: #111;
+    background-image: radial-gradient(circle at 15% 0%, rgba(245,168,0,.22), transparent 55%),
+                      radial-gradient(circle at 90% 100%, rgba(120,120,128,.20), transparent 60%);
+    padding: 24px;
+  }
+  main {
+    width: min(520px, 100%);
+    background: rgba(255,255,255,.66);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 26px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .icon {
+    width: 64px; height: 64px; margin: 0 auto; border-radius: 20px;
+    display: grid; place-items: center; font-size: 30px;
+    background: rgba(255,255,255,.85);
+    border: 1px solid rgba(255,255,255,.95);
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  }
+  h1 { font-size: 28px; margin: 14px 0 4px; letter-spacing: -0.02em; }
+  p.tagline { margin: 0 0 24px; color: #6b6b70; font-size: 15px; }
+  a.dl {
+    display: block; text-decoration: none; font-weight: 600; font-size: 17px;
+    color: #1b1400; background: var(--accent); border-radius: 16px; padding: 16px 20px;
+    box-shadow: 0 10px 24px rgba(245,168,0,.35);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  a.dl:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(245,168,0,.42); }
+  dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px;
+       margin: 26px 0 0; font-size: 14px; text-align: left; }
+  dt { color: #86868b; }
+  dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  ol { text-align: left; color: #5c5c61; font-size: 14px; margin: 24px 0 0; padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  .other { margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(60,60,67,.14); font-size: 13px; }
+  .other a { color: #a06d00; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #000; color: #f5f5f7;
+      background-image: radial-gradient(circle at 15% 0%, rgba(245,168,0,.18), transparent 55%),
+                        radial-gradient(circle at 90% 100%, rgba(120,120,128,.22), transparent 60%); }
+    main { background: rgba(28,28,30,.72); border-color: rgba(255,255,255,.14);
+      box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
+    .icon { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); }
+    p.tagline, dt, ol { color: #a1a1a6; }
+    .other { border-top-color: rgba(255,255,255,.14); }
+    .other a { color: #f0b429; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="icon">📝</div>
+  <h1>GlassNotes</h1>
+  <p class="tagline">Notes with a glass tab bar — Android release build.</p>
+  <a class="dl" href="glass_notes.apk" download>Download APK</a>
+  <dl>
+    <dt>Package</dt><dd>com.example.glassnotes</dd>
+    <dt>Version</dt><dd>1.0 (build 1)</dd>
+    <dt>Min Android</dt><dd>8.0 (API 26)</dd>
+    <dt>Target</dt><dd>Android 15 (API 35)</dd>
+    <dt>Size</dt><dd>10.7 MB</dd>
+  </dl>
+  <ol>
+    <li>Open the downloaded file on your phone.</li>
+    <li>Allow installing from this source when Android asks.</li>
+    <li>Launch <em>Notes</em> (GlassNotes).</li>
+  </ol>
+  <p class="other">Previous build: <a href="cluck_and_dash.apk" download>Cluck &amp; Dash 3D</a></p>
+</main>
+</body>
+</html>
