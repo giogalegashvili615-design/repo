@@ -16,10 +16,21 @@ artifacts for the sandbox preview.
   the `rsvg-convert` package) and is what the download page shows.
 - App name: `android:label="Notes"` in the manifest; the APK is `notes.apk`.
 - Deliverable: `glass_notes/dist/notes.apk`, served by the nginx `web` service on host port 3000.
-  `glass_notes/dist/index.html` is the landing page: a card per build (Assistant, Notes, Cluck & Dash) each with
-  its own `/assistant.apk`, `/notes.apk`, `/cluck_and_dash.apk` download link. The previous Cluck & Dash APK stays downloadable at `/cluck_and_dash.apk`
+  `glass_notes/dist/builds.html` lists all three builds (`/builds.html`), a card each with its own
+  `/assistant.apk`, `/notes.apk`, `/cluck_and_dash.apk` download link. The previous Cluck & Dash APK stays downloadable at `/cluck_and_dash.apk`
   (nginx `alias` to `cluck_and_dash/dist`, mounted at `/srv/cluck` — a file bind-mount into the read-only nginx
   root fails with "read-only file system", mount a directory instead).
+
+## Assistant site (landing page on `/`)
+
+- `assistant_site/index.html` is the single-file marketing site served at `/`: hero with the phone mock, three
+  feature cards, the **$4 / month** pricing card, and the APK download button. No build step, no dependencies.
+- Served by nginx as `location = / { root /srv/site; try_files /index.html =404; }` with
+  `./assistant_site:/srv/site:ro` mounted in compose. **Do not use `alias` on the exact-match `location = /`** —
+  nginx 1.31 concatenates index handling onto the alias and answers `500 "/srv/site/index.htmlindex.html" is not
+  a directory`.
+- The Subscribe button is a placeholder: it reveals a note saying Stripe checkout is not connected yet. Real
+  $4/month subscriptions need a Stripe connector — the page has no checkout endpoint.
 
 ### Rebuilding the APK
 
@@ -86,8 +97,8 @@ $BT/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:an
   Dart only, no asset files, single dependency
   `shared_preferences`. The 3D-ish visuals are painted with `CustomPainter` (`lib/world_painter.dart`).
 - Deliverable: `cluck_and_dash/dist/cluck_and_dash.apk` (Flutter release build), still downloadable at
-  `http://localhost:3000/cluck_and_dash.apk` through the nginx `web` service (its own `index.html` is no longer
-  the preview landing page — `glass_notes/dist/index.html` is).
+  `http://localhost:3000/cluck_and_dash.apk` through the nginx `web` service (its own `index.html` is not the
+  preview landing page — `assistant_site/index.html` is).
 
 ### Rebuilding the APK
 

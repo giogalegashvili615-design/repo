@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Assistant — Gemini chat for Android</title>
+<meta name="description" content="Assistant is a clean, glass-styled AI chat app for Android, powered by Gemini. Download the APK, or subscribe for $4 a month." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cdefs%3E%3CradialGradient id='g' cx='36%25' cy='32%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23fff'/%3E%3Cstop offset='48%25' stop-color='%23d9d9de'/%3E%3Cstop offset='100%25' stop-color='%23111114'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='13' cy='13' r='12' fill='url(%23g)'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: #101014;
+    --muted: #6b6b72;
+    --line: rgba(60,60,67,.14);
+    --card: rgba(255,255,255,.66);
+    --soft: #f1f1f5;
+    --accent: #f5a800;
+    --radius: 22px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: #f6f6f9;
+    background-image:
+      radial-gradient(circle at 12% -5%, rgba(245,168,0,.18), transparent 48%),
+      radial-gradient(circle at 88% 8%, rgba(120,120,128,.22), transparent 46%),
+      radial-gradient(circle at 50% 110%, rgba(120,120,128,.18), transparent 55%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width: min(1060px, 100% - 40px); margin-inline: auto; }
+
+  /* nav */
+  nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 18px 0 6px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.02em; }
+  .brand svg { display: block; }
+  .navlink {
+    text-decoration: none; color: var(--ink); font-size: 14px; font-weight: 600;
+    padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card); backdrop-filter: blur(14px);
+  }
+  .navlink:hover { border-color: rgba(60,60,67,.28); }
+
+  /* hero */
+  header.hero {
+    display: grid; grid-template-columns: 1fr; gap: 30px;
+    align-items: center; padding: 34px 0 18px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600;
+    color: var(--muted); background: var(--card); border: 1px solid var(--line);
+    padding: 6px 12px; border-radius: 999px; backdrop-filter: blur(14px);
+  }
+  .pill b { color: var(--ink); }
+  h1 {
+    font-size: clamp(34px, 7.2vw, 58px); line-height: 1.03; letter-spacing: -.035em;
+    margin: 16px 0 14px; font-weight: 800;
+  }
+  h1 em { font-style: normal; color: #8a8a92; }
+  .lede { font-size: 17px; line-height: 1.55; color: var(--muted); margin: 0 0 26px; max-width: 46ch; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    text-decoration: none; font-weight: 650; font-size: 16px; border-radius: 15px;
+    padding: 15px 22px; border: 1px solid transparent; cursor: pointer;
+    transition: transform .15s ease, opacity .15s ease, background .2s ease;
+  }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-primary:hover { transform: translateY(-1px); opacity: .92; }
+  .btn-ghost { background: var(--card); color: var(--ink); border-color: var(--line); backdrop-filter: blur(14px); }
+  .btn-ghost:hover { transform: translateY(-1px); }
+  .fineprint { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+
+  /* phone mock */
+  .device {
+    position: relative; border-radius: 38px; padding: 14px;
+    background: linear-gradient(160deg, rgba(255,255,255,.9), rgba(255,255,255,.45));
+    border: 1px solid rgba(255,255,255,.9);
+    box-shadow: 0 30px 70px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.7);
+    backdrop-filter: blur(18px) saturate(160%);
+    max-width: 340px; width: 100%; margin-inline: auto;
+  }
+  .screen { background: #fff; border-radius: 26px; padding: 18px 14px 12px; overflow: hidden; }
+  .screen .orb {
+    width: 54px; height: 54px; border-radius: 50%; margin: 4px auto 12px;
+    background: radial-gradient(circle at 36% 32%, #fff 0%, #d9d9de 48%, #111114 100%);
+    box-shadow: 0 12px 22px rgba(0,0,0,.18);
+  }
+  .screen h2 { font-size: 19px; margin: 0 0 2px; text-align: center; letter-spacing: -.02em; }
+  .screen .sub { font-size: 12px; color: var(--muted); text-align: center; margin: 0 0 14px; }
+  .bubble { font-size: 12.5px; line-height: 1.45; border-radius: 15px; padding: 10px 12px; margin-bottom: 8px; max-width: 92%; }
+  .bubble.me { background: var(--ink); color: #fff; margin-left: auto; border-bottom-right-radius: 6px; }
+  .bubble.ai { background: var(--soft); border-bottom-left-radius: 6px; }
+  .composer {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-top: 12px; padding: 8px 8px 8px 14px; border-radius: 999px;
+    background: var(--soft); font-size: 12.5px; color: #8a8a92;
+  }
+  .send { width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #fff;
+    display: grid; place-items: center; font-size: 13px; }
+
+  /* sections */
+  section { padding: 46px 0; }
+  .kicker { font-size: 12.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+  h2.title { font-size: clamp(24px, 4.4vw, 34px); letter-spacing: -.03em; margin: 0 0 22px; }
+  .cards { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  .card {
+    background: var(--card); border: 1px solid rgba(255,255,255,.9); border-radius: var(--radius);
+    padding: 22px; backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 16px 40px rgba(0,0,0,.07), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .card h3 { margin: 12px 0 6px; font-size: 17px; letter-spacing: -.01em; }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+  .glyph {
+    width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--ink); color: #fff; font-size: 17px;
+  }
+
+  /* pricing */
+  .plan {
+    display: grid; gap: 22px; grid-template-columns: 1fr; align-items: center;
+    background: var(--card); border: 1px solid rgba(255,255,255,.9);
+    border-radius: 26px; padding: 26px;
+    backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 24px 60px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .price { display: flex; align-items: baseline; gap: 7px; margin: 4px 0 6px; }
+  .price .amount { font-size: 52px; font-weight: 800; letter-spacing: -.04em; }
+  .price .per { font-size: 15px; color: var(--muted); font-weight: 600; }
+  ul.ticks { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 9px; }
+  ul.ticks li { position: relative; padding-left: 26px; font-size: 14.5px; color: #3a3a40; }
+  ul.ticks li::before {
+    content: ""; position: absolute; left: 0; top: 3px; width: 17px; height: 17px; border-radius: 50%;
+    background: var(--ink);
+    -webkit-mask: no-repeat center/9px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1 6.4 4.2 9.6 11 2.6' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    mask: no-repeat center/9px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1 6.4 4.2 9.6 11 2.6' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+  .plan .aside { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+  .plan-cta { width: 100%; }
+  .subnote { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+
+  /* footer */
+  footer { border-top: 1px solid var(--line); margin-top: 10px; padding: 24px 0 40px; }
+  .foot { display: flex; flex-wrap: wrap; gap: 12px 20px; justify-content: space-between; align-items: center; font-size: 13.5px; color: var(--muted); }
+  .foot a { color: var(--ink); text-decoration: none; font-weight: 600; }
+  .foot a:hover { text-decoration: underline; }
+
+  @media (min-width: 760px) {
+    header.hero { grid-template-columns: 1.15fr .85fr; padding: 56px 0 24px; }
+    .cards { grid-template-columns: repeat(3, 1fr); }
+    .plan { grid-template-columns: 1.1fr .9fr; padding: 34px; }
+    section { padding: 58px 0; }
+    .device { max-width: 360px; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f5f5f7; --muted: #a1a1a8; --line: rgba(255,255,255,.14);
+      --card: rgba(28,28,30,.72); --soft: #2a2a2e;
+    }
+    body { background: #060607;
+      background-image:
+        radial-gradient(circle at 12% -5%, rgba(245,168,0,.14), transparent 48%),
+        radial-gradient(circle at 88% 8%, rgba(120,120,128,.26), transparent 46%),
+        radial-gradient(circle at 50% 110%, rgba(120,120,128,.2), transparent 55%); }
+    .btn-primary { background: #f5f5f7; color: #101014; }
+    .device { background: linear-gradient(160deg, rgba(58,58,62,.85), rgba(28,28,30,.6)); border-color: rgba(255,255,255,.14); }
+    .screen { background: #0e0e10; }
+    .bubble.me { background: #f5f5f7; color: #101014; }
+    .bubble.ai { background: var(--soft); color: #ececf1; }
+    .composer { background: #1e1e22; color: #8a8a92; }
+    .send { background: #f5f5f7; color: #101014; }
+    .glyph { background: #f5f5f7; color: #101014; }
+    ul.ticks li { color: #d6d6dc; }
+    ul.ticks li::before { background: #a1a1a8; }
+    .card { box-shadow: 0 16px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
+    .plan { box-shadow: 0 24px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <span class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <defs>
+          <radialGradient id="orbGrad" cx="36%" cy="32%" r="70%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="48%" stop-color="#d9d9de" />
+            <stop offset="100%" stop-color="#111114" />
+          </radialGradient>
+        </defs>
+        <circle cx="13" cy="13" r="12" fill="url(#orbGrad)" />
+      </svg>
+      Assistant
+    </span>
+    <a class="navlink" href="/assistant.apk" download>Download APK</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="pill"><b>Android</b> · Gemini-powered · 10.7 MB</span>
+      <h1>Ask anything.<br /><em>In glass.</em></h1>
+      <p class="lede">
+        Assistant is a quiet, glass-clean chat app for Android. Ask a question, plan your day,
+        write a poem — answers stream back from Gemini in a conversation you keep on your own phone.
+      </p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="/assistant.apk" download>Download APK</a>
+        <a class="btn btn-ghost" href="#pricing">$4 / month</a>
+      </div>
+      <p class="fineprint">Android 8.0+ · Sideload build · Your own API key stays in the app's settings.</p>
+    </div>
+
+    <div class="device" role="img" aria-label="Preview of the Assistant chat screen">
+      <div class="screen">
+        <div class="orb"></div>
+        <h2>How can I help?</h2>
+        <p class="sub">Powered by Gemini</p>
+        <div class="bubble me">Plan my day, I have three calls and a deadline.</div>
+        <div class="bubble ai">Here's a calm order for it: calls before 11, deep work after lunch, deadline buffer at 16:00.</div>
+        <div class="composer"><span>Ask anything</span><span class="send">↑</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="features">
+    <p class="kicker">Why it feels different</p>
+    <h2 class="title">Simple by design, not by accident.</h2>
+    <div class="cards">
+      <article class="card">
+        <div class="glyph">✦</div>
+        <h3>Gemini answers</h3>
+        <p>Every reply comes straight from Gemini. Switch models from Settings whenever a new one suits you better.</p>
+      </article>
+      <article class="card">
+        <div class="glyph">◍</div>
+        <h3>Your key, your phone</h3>
+        <p>Bring your own Gemini API key. It is stored locally on the device — no account, no cloud inbox of your chats.</p>
+      </article>
+      <article class="card">
+        <div class="glyph">⌘</div>
+        <h3>Glass that stays out of the way</h3>
+        <p>One scrolling conversation, a floating glass tab bar, history that keeps itself tidy. Nothing to configure.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <p class="kicker">Pricing</p>
+    <h2 class="title">One plan. $4 a month.</h2>
+    <div class="plan">
+      <div>
+        <div class="price"><span class="amount">$4</span><span class="per">/ month</span></div>
+        <p class="aside" style="margin:0">Everything in Assistant, billed monthly. Cancel any time.</p>
+        <ul class="ticks">
+          <li>Unlimited conversations and history</li>
+          <li>All Gemini models, switchable in Settings</li>
+          <li>New features and updates included</li>
+        </ul>
+      </div>
+      <div>
+        <button class="btn btn-primary plan-cta" id="subscribe" type="button">Subscribe — $4 / month</button>
+        <p class="subnote" id="subnote" hidden>Subscriptions aren’t live yet — Stripe checkout still needs to be connected.</p>
+        <p class="fineprint">Prefer to try it first? The APK above is the full app.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <span>Assistant · Android 8.0+ · 10.7 MB</span>
+      <span><a href="/builds.html">Other builds</a></span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  document.getElementById('subscribe').addEventListener('click', function () {
+    document.getElementById('subnote').hidden = false;
+  });
+</script>
+</body>
+</html>
