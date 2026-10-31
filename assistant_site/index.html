@@ -268,7 +268,8 @@
       </div>
       <div>
         <button class="btn btn-primary plan-cta" id="subscribe" type="button">Subscribe — $4 / month</button>
-        <p class="subnote" id="subnote" hidden>Subscriptions aren’t live yet — Stripe checkout still needs to be connected.</p>
+        <p class="subnote" id="subnote" hidden></p>
+        <p class="fineprint">Google Pay and cards, billed securely by Stripe. Cancel any time.</p>
         <p class="fineprint">Prefer to try it first? The APK above is the full app.</p>
       </div>
     </div>
@@ -284,9 +285,31 @@
 </div>
 
 <script>
-  document.getElementById('subscribe').addEventListener('click', function () {
-    document.getElementById('subnote').hidden = false;
-  });
+  (function () {
+    var btn = document.getElementById('subscribe');
+    var note = document.getElementById('subnote');
+    var failed = 'Checkout is unavailable right now — please try again in a moment.';
+
+    btn.addEventListener('click', async function () {
+      note.hidden = true;
+      btn.disabled = true;
+      try {
+        var res = await fetch('/api/checkout', { method: 'POST' });
+        var data = await res.json().catch(function () { return {}; });
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        note.textContent = data.error === 'not_configured'
+          ? 'Google Pay checkout is not activated yet — the APK below is the full app in the meantime.'
+          : failed;
+      } catch (e) {
+        note.textContent = failed;
+      }
+      note.hidden = false;
+      btn.disabled = false;
+    });
+  })();
 </script>
 </body>
 </html>

@@ -29,8 +29,18 @@ artifacts for the sandbox preview.
   `./assistant_site:/srv/site:ro` mounted in compose. **Do not use `alias` on the exact-match `location = /`** —
   nginx 1.31 concatenates index handling onto the alias and answers `500 "/srv/site/index.htmlindex.html" is not
   a directory`.
-- The Subscribe button is a placeholder: it reveals a note saying Stripe checkout is not connected yet. Real
-  $4/month subscriptions need a Stripe connector — the page has no checkout endpoint.
+- **Checkout** (`payments/`, Node 22 + Express + `stripe`): `POST /api/checkout` creates a Stripe Checkout
+  Session in `subscription` mode with inline `price_data` — $4.00 USD / month, so no Price ID has to be created
+  in the dashboard. Stripe Checkout offers **Google Pay** (and Apple Pay) on supported devices once the Stripe
+  account has wallets enabled. `success_url` / `cancel_url` are built from `BASE44_PUBLIC_HOST_SUFFIX`
+  (`https://3000-<suffix>/`), so never hardcode them.
+- nginx proxies `location /api/` to `http://payments:8000`, so the browser talks to the site's own origin.
+  **Restart the `web` service after editing `nginx.conf`** — the file is bind-mounted, but nginx only reads it at
+  start (`docker compose ... restart web`).
+- Without `STRIPE_SECRET_KEY` the service still boots: `/api/health` reports `{"checkout":false}` and
+  `/api/checkout` answers `503 {"error":"not_configured"}`, which the page turns into a friendly note. The key is
+  delivered by the platform in `/run/base44/app.env` (`env_file`, listed last so a dashboard value wins).
+- `npm install` runs from the compose command into the bind-mounted `payments/` dir (no lockfile committed).
 
 ### Rebuilding the APK
 
