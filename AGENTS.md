@@ -7,8 +7,15 @@ artifacts for the sandbox preview.
 ## GlassNotes (native Android, Jetpack Compose)
 
 - Source: `glass_notes/` — Kotlin only, a single `app/src/main/java/com/example/glassnotes/MainActivity.kt`
-  (all UI is Compose, no resources besides the manifest). The zip has no Gradle wrapper and no launcher icon.
-- Deliverable: `glass_notes/dist/glass_notes.apk`, listed by `glass_notes/dist/index.html` and served by the nginx
+  (all UI is Compose). The zip has no Gradle wrapper and no launcher icon; the icon added here lives in
+  `app/src/main/res/`: adaptive `mipmap-anydpi-v26/ic_launcher{,_round}.xml` over the vector drawables
+  `ic_launcher_background` (amber gradient), `ic_launcher_foreground` (white note sheet) and
+  `ic_launcher_monochrome` (themed icons, API 33+). minSdk is 26, so the adaptive icon needs no PNG fallback.
+  `glass_notes/dist/icon.png` (512 px, Play-Store size) is rasterized from an SVG copy of the same artwork with
+  `apk add rsvg-convert && rsvg-convert -w 512 -h 512 icon.svg -o icon.png` (alpine already has `librsvg` but not
+  the `rsvg-convert` package) and is what the download page shows.
+- App name: `android:label="Notes"` in the manifest; the APK is `notes.apk`.
+- Deliverable: `glass_notes/dist/notes.apk`, listed by `glass_notes/dist/index.html` and served by the nginx
   `web` service on host port 3000. The previous Cluck & Dash APK stays downloadable at `/cluck_and_dash.apk`
   (nginx `alias` to `cluck_and_dash/dist`, mounted at `/srv/cluck` — a file bind-mount into the read-only nginx
   root fails with "read-only file system", mount a directory instead).
@@ -42,7 +49,7 @@ keytool -genkeypair -keystore debug.keystore -storepass android -keypass android
   -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 $BT/zipalign -f -p 4 src/app/build/outputs/apk/release/app-release-unsigned.apk out/aligned.apk
 $BT/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android \
-  --ks-key-alias androiddebugkey --out out/glass_notes.apk out/aligned.apk
+  --ks-key-alias androiddebugkey --out out/notes.apk out/aligned.apk
 ```
 
 - Debug-key signed is fine for sideloading; a Play Store upload needs a real keystore.
@@ -100,9 +107,9 @@ Notes learned the hard way:
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and
-`curl -sSI http://localhost:3000/glass_notes.apk` a `200` with `Content-Type: application/vnd.android.package-archive`
+`curl -sSI http://localhost:3000/notes.apk` a `200` with `Content-Type: application/vnd.android.package-archive`
 (`/cluck_and_dash.apk` must still answer the same way). Check the served bytes match the committed file:
 
 ```bash
-curl -sS -o /tmp/dl.apk http://localhost:3000/glass_notes.apk && sha256sum /tmp/dl.apk glass_notes/dist/glass_notes.apk
+curl -sS -o /tmp/dl.apk http://localhost:3000/notes.apk && sha256sum /tmp/dl.apk glass_notes/dist/notes.apk
 ```

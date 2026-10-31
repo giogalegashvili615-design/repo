@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- monochrome layer: the note sheet with its rules cut out -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M39,33h30a7,7 0 0 1 7,7v29a7,7 0 0 1 -7,7h-30a7,7 0 0 1 -7,-7v-29a7,7 0 0 1 7,-7zM41,45h22a2.5,2.5 0 0 1 0,5h-22a2.5,2.5 0 0 1 0,-5zM41,56h26a1.75,1.75 0 0 1 0,3.5h-26a1.75,1.75 0 0 1 0,-3.5zM41,63h17a1.75,1.75 0 0 1 0,3.5h-17a1.75,1.75 0 0 1 0,-3.5z" />
+</vector>

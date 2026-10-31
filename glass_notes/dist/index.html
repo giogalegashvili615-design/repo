@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>GlassNotes — Android build</title>
+<title>Notes — Android build</title>
+<link rel="icon" href="icon.png" />
 <style>
   :root { color-scheme: light dark; --accent: #F5A800; }
   * { box-sizing: border-box; }
@@ -25,12 +26,10 @@
     text-align: center;
     box-shadow: 0 24px 60px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.6);
   }
-  .icon {
-    width: 64px; height: 64px; margin: 0 auto; border-radius: 20px;
-    display: grid; place-items: center; font-size: 30px;
-    background: rgba(255,255,255,.85);
-    border: 1px solid rgba(255,255,255,.95);
-    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  img.appicon {
+    display: block; width: 76px; height: 76px; margin: 0 auto;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.18);
   }
   h1 { font-size: 28px; margin: 14px 0 4px; letter-spacing: -0.02em; }
   p.tagline { margin: 0 0 24px; color: #6b6b70; font-size: 15px; }
@@ -55,7 +54,6 @@
                         radial-gradient(circle at 90% 100%, rgba(120,120,128,.22), transparent 60%); }
     main { background: rgba(28,28,30,.72); border-color: rgba(255,255,255,.14);
       box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
-    .icon { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); }
     p.tagline, dt, ol { color: #a1a1a6; }
     .other { border-top-color: rgba(255,255,255,.14); }
     .other a { color: #f0b429; }
@@ -64,10 +62,10 @@
 </head>
 <body>
 <main>
-  <div class="icon">📝</div>
-  <h1>GlassNotes</h1>
+  <img class="appicon" src="icon.png" alt="Notes app icon" width="76" height="76" />
+  <h1>Notes</h1>
   <p class="tagline">Notes with a glass tab bar — Android release build.</p>
-  <a class="dl" href="glass_notes.apk" download>Download APK</a>
+  <a class="dl" href="notes.apk" download>Download APK</a>
   <dl>
     <dt>Package</dt><dd>com.example.glassnotes</dd>
     <dt>Version</dt><dd>1.0 (build 1)</dd>
@@ -78,7 +76,7 @@
   <ol>
     <li>Open the downloaded file on your phone.</li>
     <li>Allow installing from this source when Android asks.</li>
-    <li>Launch <em>Notes</em> (GlassNotes).</li>
+    <li>Launch <em>Notes</em>.</li>
   </ol>
   <p class="other">Previous build: <a href="cluck_and_dash.apk" download>Cluck &amp; Dash 3D</a></p>
 </main>
