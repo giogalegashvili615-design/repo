@@ -13,6 +13,7 @@ services:
       - ./assistant_site:/srv/site:ro
       - ./cluck_and_dash/dist:/srv/cluck:ro
       - ./glass_assistant/dist:/srv/assistant:ro
+      - ./blob_wallet/dist:/srv/blobwallet:ro
     depends_on:
       payments:
         condition: service_started

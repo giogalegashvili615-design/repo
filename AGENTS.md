@@ -147,6 +147,26 @@ Notes learned the hard way:
 - `docker run` started in the background with `nohup … &` keeps going after `run_shell_command` returns, so a long
   build can be started once and watched with `tail -f` on its log.
 
+## Blob Wallet (Android WebView wrapper)
+
+- Source: `blob_wallet/` (from the uploaded zip): Kotlin `MainActivity` hosts a WebView over the local
+  `app/src/main/assets/index.html` wallet UI (`https://appassets.androidplatform.net/assets/index.html` through
+  `WebViewAssetLoader`), package `ge.blobwallet.app`, label `Blob Wallet`, minSdk 24.
+- Build: the zip has no Gradle wrapper. Same toolchain as the other apps (`flutter-android-builder` + Gradle
+  **8.9** + `-Dorg.gradle.jvmargs` heap flag). Only two build edits were needed: AGP 8.5.2 → **8.6.1** and
+  compileSdk/targetSdk 34 → **35**, because the image only carries SDK platforms 35/36.
+- Icon: the artwork is the user-supplied 512 px squircle, kept at `blob_wallet/icon-source.png` (and as
+  `blob_wallet/dist/icon.png`). `mipmap-*/ic_launcher{,_round}.png` are that image scaled to 48/72/96/144/192;
+  `mipmap-*/ic_foreground.png` is the same artwork **full-bleed** at 108/162/216/324/432 for the existing adaptive
+  icon, whose background is `@color/ic_bg` (#B9AEFF). That colour is exactly the icon's own lavender, so the
+  squircle's edge is invisible under the adaptive mask — do not add padding around the foreground, it only makes
+  the blob shrink.
+- Deliverable: `blob_wallet/dist/blob_wallet.apk` (2.7 MB, debug-key signed), served at `/blob_wallet.apk`
+  (nginx `alias` → `/srv/blobwallet`, bind-mounted from `blob_wallet/dist`), with a card on `/builds.html`.
+- Verified: `aapt dump badging` (package, label, minSdk 24, targetSdk 35, launchable `MainActivity`, adaptive
+  icon) and `apksigner verify`; the packaged 432×432 foreground compares byte-identical to the generated
+  `mipmap-xxxhdpi/ic_foreground.png`. Runtime behaviour is not exercised — there is no emulator here.
+
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and
