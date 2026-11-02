@@ -161,6 +161,12 @@ Notes learned the hard way:
   icon, whose background is `@color/ic_bg` (#B9AEFF). That colour is exactly the icon's own lavender, so the
   squircle's edge is invisible under the adaptive mask — do not add padding around the foreground, it only makes
   the blob shrink.
+- The uploaded `BlobWallet-android1.zip` update (versionCode **2** / 1.1, same package) turned `index.html` into an
+  account-gated app: a lavender sign-in overlay (`#auth`, email+password hashed with `crypto.subtle` and kept in
+  `localStorage` under `bw3a`/`bw3u`, or a Google preview sheet when `GOOGLE_CLIENT_ID` is empty), a ₾0.00 starting
+  balance, `#topb` top-up and Sign out on the profile tab. Its build files went back to AGP 8.5.2 / compileSdk 34;
+  keep this repo's 8.6.1 / 35 bump. The zip's own mipmap PNGs are the original artwork — the committed icons stay
+  the scaled user-supplied squircle described below.
 - Deliverable: `blob_wallet/dist/blob_wallet.apk` (2.7 MB, debug-key signed), served at `/blob_wallet.apk`
   (nginx `alias` → `/srv/blobwallet`, bind-mounted from `blob_wallet/dist`), with a card on `/builds.html`.
 - Verified: `aapt dump badging` (package, label, minSdk 24, targetSdk 35, launchable `MainActivity`, adaptive
