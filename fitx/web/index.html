@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FitX — SwiftUI design preview</title>
+<meta name="theme-color" content="#08080a" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob--pink"></span>
+    <span class="blob blob--gold"></span>
+    <span class="blob blob--violet"></span>
+    <span class="grain"></span>
+  </div>
+
+  <div class="stage">
+    <header class="stage-head">
+      <div class="brand">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+            <circle cx="12" cy="12" r="8.2" opacity=".45" />
+            <circle cx="12" cy="12" r="4.4" opacity=".7" />
+            <path d="M12 8.6a3.4 3.4 0 010 6.8" />
+          </svg>
+        </span>
+        <div class="brand-text">
+          <strong>FitX</strong>
+          <span>SwiftUI · iOS 17</span>
+        </div>
+      </div>
+
+      <div class="seg" role="group" aria-label="Preview mode">
+        <button class="seg-btn is-active" data-view="interactive">Interactive</button>
+        <button class="seg-btn" data-view="gallery">All screens</button>
+      </div>
+    </header>
+
+    <main class="view" id="view"></main>
+
+    <footer class="stage-foot">
+      <div class="specs">
+        <span class="spec"><i></i>Floating glass taskbar</span>
+        <span class="spec"><i></i>Spring tab indicator</span>
+        <span class="spec"><i></i>Route map</span>
+        <span class="spec"><i></i>SwiftUI sources in repo</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

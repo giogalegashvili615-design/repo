@@ -1,0 +1,25 @@
+name: fitx
+
+services:
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    command: ["node", "server.mjs"]
+    environment:
+      - PORT=3000
+      - BASE44_PREVIEW_MODE
+    volumes:
+      - ./fitx/web:/app
+    ports:
+      - "3000:3000"
+    labels:
+      base44.project: "FitX"
+      base44.kind: "web"
+      base44.port: "3000"
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/ || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
