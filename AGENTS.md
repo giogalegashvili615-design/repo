@@ -22,6 +22,10 @@ The Android app below lives beside it; nothing in `alarmcn/` or `archlinuxcn/` i
   Rebuilding the bar's innerHTML on every render would restart the animation — don't go back to that.
   Icon pop, label rise, press-scale, the ambient sheen and the search-button halo are pure CSS;
   the global `prefers-reduced-motion` rule already turns them all off.
+- Launcher icon: adaptive icon in `res/mipmap-anydpi-v26/` — white `@color/ic_bg` background,
+  `drawable/ic_launcher_foreground.xml` (the eight translucent rainbow petals, one path rotated in
+  45° groups around 54,54) and `drawable/ic_launcher_monochrome.xml` for themed icons. The artwork
+  stays inside radius 31 of the 108 viewport so circular launcher masks don't clip it.
 - `glass_gallery/nginx.conf` serves the page on `/`, the download page on `/download`
   (`alias` to `dist/download.html`) and the APK on `/glass_gallery.apk` (MIME type must stay
   `application/vnd.android.package-archive`). `dist/` is bind-mounted as a directory; a single-file
