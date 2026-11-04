@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- four photo tiles: the gallery grid -->
+    <path android:pathData="M34,27h10a7,7 0 0 1 7,7v10a7,7 0 0 1 -7,7h-10a7,7 0 0 1 -7,-7v-10a7,7 0 0 1 7,-7z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="27"
+                android:startY="27"
+                android:endX="51"
+                android:endY="51"
+                android:startColor="#FF6FB8FF"
+                android:endColor="#FF0A7CFF" />
+        </aapt:attr>
+    </path>
+    <path android:pathData="M64,27h10a7,7 0 0 1 7,7v10a7,7 0 0 1 -7,7h-10a7,7 0 0 1 -7,-7v-10a7,7 0 0 1 7,-7z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="57"
+                android:startY="27"
+                android:endX="81"
+                android:endY="51"
+                android:startColor="#FF8CE39A"
+                android:endColor="#FF1C9E52" />
+        </aapt:attr>
+    </path>
+    <path android:pathData="M34,57h10a7,7 0 0 1 7,7v10a7,7 0 0 1 -7,7h-10a7,7 0 0 1 -7,-7v-10a7,7 0 0 1 7,-7z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="27"
+                android:startY="57"
+                android:endX="51"
+                android:endY="81"
+                android:startColor="#FFFFD07A"
+                android:endColor="#FFF08A00" />
+        </aapt:attr>
+    </path>
+    <path android:pathData="M64,57h10a7,7 0 0 1 7,7v10a7,7 0 0 1 -7,7h-10a7,7 0 0 1 -7,-7v-10a7,7 0 0 1 7,-7z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="57"
+                android:startY="57"
+                android:endX="81"
+                android:endY="81"
+                android:startColor="#FFFF8AA6"
+                android:endColor="#FFFF2D55" />
+        </aapt:attr>
+    </path>
+    <!-- glass glare across the top-left tile -->
+    <path
+        android:fillColor="#33FFFFFF"
+        android:pathData="M34,27h10a7,7 0 0 1 7,7v3l-17,11v-14a7,7 0 0 1 7,-7z" />
+</vector>
