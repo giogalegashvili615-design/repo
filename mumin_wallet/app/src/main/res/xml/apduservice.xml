@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Demo AID F04D554D494E. For real card payments, add the PPSE AID (325041592E5359532E4444463031)
+     and your issuer's AIDs in a group with android:category="payment" (needs issuer-provisioned token). -->
+<host-apdu-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/hce_desc" android:requireDeviceUnlock="false">
+    <aid-group android:description="@string/hce_desc" android:category="other">
+        <aid-filter android:name="F04D554D494E"/>
+    </aid-group>
+</host-apdu-service>

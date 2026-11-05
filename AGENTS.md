@@ -173,6 +173,23 @@ Notes learned the hard way:
   icon) and `apksigner verify`; the packaged 432×432 foreground compares byte-identical to the generated
   `mipmap-xxxhdpi/ic_foreground.png`. Runtime behaviour is not exercised — there is no emulator here.
 
+## Wallet (native Android, Kotlin + Compose, NFC tap-to-pay demo)
+
+- Source: `mumin_wallet/` (from `MuminWallet-Android.zip`): `MainActivity` drives NFC reader mode + biometrics,
+  `PayService` is an HCE `HostApduService`, `Wallet.kt` holds the demo balance/token/HMAC, `Ui.kt` renders the
+  Wallet / Terminal tabs. Package `ge.mumin.wallet`, minSdk 30, targetSdk **35**.
+- **Name**: the zip shipped as "Mumin Wallet"; the manifest label and `strings.xml` `hce_desc` were changed to
+  **Wallet** at the user's request. The package id, theme name (`Theme.Mumin`) and directory keep the original
+  `mumin` naming — renaming them would change the app's identity and let it install alongside itself.
+- Build edits, same as Blob Wallet: AGP 8.5.2 → **8.6.1** and compileSdk/targetSdk 34 → **35** (the image only
+  has platforms 35/36). Compose compiler 1.5.14 pairs with Kotlin 1.9.24 — do not bump one alone.
+- No launcher icon in the zip, so the APK uses the stock Android icon (the other apps got bespoke artwork; this
+  one has none supplied).
+- Deliverable: `mumin_wallet/dist/wallet.apk` (~39 MB — Compose + `material-icons-extended`), debug-key signed,
+  served at `/wallet.apk` (nginx `alias` → `/srv/wallet`, bind-mounted from `mumin_wallet/dist`) with a card on
+  `/builds.html`. The APK is a two-phone NFC demo: a real bank terminal will not accept it (see the project
+  README), and there is no emulator here, so the tap-to-pay round trip is untested.
+
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and

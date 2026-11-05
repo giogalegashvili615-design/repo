@@ -14,6 +14,7 @@ services:
       - ./cluck_and_dash/dist:/srv/cluck:ro
       - ./glass_assistant/dist:/srv/assistant:ro
       - ./blob_wallet/dist:/srv/blobwallet:ro
+      - ./mumin_wallet/dist:/srv/wallet:ro
     depends_on:
       payments:
         condition: service_started
