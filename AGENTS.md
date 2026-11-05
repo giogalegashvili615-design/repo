@@ -185,7 +185,7 @@ Notes learned the hard way:
   has platforms 35/36). Compose compiler 1.5.14 pairs with Kotlin 1.9.24 — do not bump one alone.
 - No launcher icon in the zip, so the APK uses the stock Android icon (the other apps got bespoke artwork; this
   one has none supplied).
-- Deliverable: `mumin_wallet/dist/wallet.apk` (~39 MB — Compose + `material-icons-extended`), debug-key signed,
+- Deliverable: `mumin_wallet/dist/wallet.apk` (~40 MB — Compose + `material-icons-extended`), debug-key signed,
   served at `/wallet.apk` (nginx `alias` → `/srv/wallet`, bind-mounted from `mumin_wallet/dist`) with a card on
   `/builds.html`. The APK is a two-phone NFC demo: a real bank terminal will not accept it (see the project
   README), and there is no emulator here, so the tap-to-pay round trip is untested.
