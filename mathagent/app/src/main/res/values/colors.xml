@@ -1,0 +1,4 @@
+<resources>
+    <!-- Matches the deep red at the bottom of the launcher artwork. -->
+    <color name="ic_bg">#E63946</color>
+</resources>

@@ -1,0 +1,53 @@
+services:
+  web:
+    image: nginx:alpine
+    labels:
+      base44.project: "Android APK builds"
+      base44.kind: "web"
+      base44.port: "3000"
+    ports:
+      - "3000:80"
+    volumes:
+      - ./glass_notes/dist:/usr/share/nginx/html:ro
+      - ./glass_notes/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./assistant_site:/srv/site:ro
+      - ./cluck_and_dash/dist:/srv/cluck:ro
+      - ./glass_assistant/dist:/srv/assistant:ro
+      - ./blob_wallet/dist:/srv/blobwallet:ro
+      - ./mumin_wallet/dist:/srv/wallet:ro
+      - ./mathagent/dist:/srv/mathagent:ro
+    depends_on:
+      payments:
+        condition: service_started
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  # $4/month subscription checkout (Stripe Checkout → Google Pay / cards).
+  payments:
+    image: node:22-alpine
+    labels:
+      base44.project: "Assistant payments"
+      base44.kind: "api"
+    working_dir: /srv/pay
+    command: ["sh", "-ec", "npm install --no-audit --no-fund --prefer-offline && exec node server.js"]
+    volumes:
+      - ./payments:/srv/pay
+    environment:
+      - BASE44_PUBLIC_HOST_SUFFIX
+      - BASE44_PREVIEW_MODE
+    # STRIPE_SECRET_KEY arrives from the platform secrets file; listed last so a
+    # dashboard value always wins.
+    env_file:
+      - /run/base44/app.env
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/api/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 40s

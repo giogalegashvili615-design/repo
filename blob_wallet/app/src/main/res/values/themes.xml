@@ -1,0 +1,9 @@
+<resources>
+  <color name="ic_bg">#B9AEFF</color>
+  <style name="Theme.Blob" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:statusBarColor">#B9AEFF</item>
+    <item name="android:navigationBarColor">#B9AEFF</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowBackground">@color/ic_bg</item>
+  </style>
+</resources>

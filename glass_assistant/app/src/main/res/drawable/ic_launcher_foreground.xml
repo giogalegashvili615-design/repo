@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- soft contact shadow under the sphere -->
+    <path
+        android:fillColor="#1F000000"
+        android:pathData="M46,84h16a5,3 0 0 1 -5,3h-6a5,3 0 0 1 -5,-3z" />
+    <!-- glass sphere: same gradient as the app's empty state -->
+    <path android:pathData="M54,26a25,25 0 1 1 -0.1,0z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="radial"
+                android:centerX="45"
+                android:centerY="41"
+                android:gradientRadius="33"
+                android:startColor="#FFFFFFFF"
+                android:centerColor="#FFD9D9DE"
+                android:endColor="#FF111114" />
+        </aapt:attr>
+    </path>
+    <!-- rim highlight -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#66FFFFFF"
+        android:strokeWidth="1.2"
+        android:pathData="M54,27.4a24.6,24.6 0 1 1 -0.1,0z" />
+    <!-- specular dot -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M44,38a5.5,4 0 1 1 -0.1,0z" />
+</vector>
