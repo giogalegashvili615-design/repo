@@ -214,6 +214,25 @@ Notes learned the hard way:
   one, and the 432 px foreground still has the white Σ at its centre. Runtime behaviour is not exercised —
   there is no emulator here.
 
+## Music (iOS 26 style player, Android WebView wrapper)
+
+- Source: `ios26music/` (from `iOS26Music-Android.zip`): Java `MainActivity` hosts the single-file
+  `app/src/main/assets/index.html` (53 KB) in a WebView through `WebViewAssetLoader`
+  (`https://appassets.androidplatform.net/assets/index.html`, so IndexedDB keeps the imported MP3s), opens the
+  system file picker for "Add MP3", and sends the Back button to Now Playing / Up Next first. Package
+  `com.ios26.music`, label `Music`, minSdk 26, compileSdk/targetSdk **34**.
+- Build: AGP **8.7.3** needs Gradle **8.9** (the project's own wrapper version), so use `gradle-8.9` in
+  `/tmp/mabuild`, not the 8.7 that Math Agent uses. Same `eclipse-temurin:17-jdk-jammy` + SDK (platform 34,
+  build-tools 34/35) and `-Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g"` heap flag.
+- The zip already carries its icon (adaptive only: `@color/ic_launcher_background` #FA2D48 + white note vector);
+  minSdk 26 means no PNG fallback is needed. `app/build.gradle.kts` sets `signingConfig = debug` for release,
+  so `assembleRelease` emits an **already signed** `app-release.apk` — no separate `zipalign`/`apksigner` step.
+- Deliverable: `ios26music/dist/music.apk` (0.4 MB), served at `/music.apk` (nginx `alias` → `/srv/music`,
+  bind-mounted from `ios26music/dist`) with the first card on `/builds.html`.
+- Verified: `apksigner verify` (CN=Android Debug), `aapt dump badging` (package, label `Music`, minSdk 26,
+  targetSdk 34, launchable `MainActivity`, adaptive icon) and the packaged `assets/index.html` is 53,311 bytes.
+  Runtime behaviour is not exercised — there is no emulator here.
+
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and
