@@ -233,6 +233,25 @@ Notes learned the hard way:
   targetSdk 34, launchable `MainActivity`, adaptive icon) and the packaged `assets/index.html` is 53,311 bytes.
   Runtime behaviour is not exercised — there is no emulator here.
 
+## Chicken Run 3D (Android WebView game)
+
+- Source: `chicken_run_3d/` (from `ChickenRun3D.zip`): `MainActivity` is a fullscreen immersive WebView over
+  `file:///android_asset/index.html`; the game markup/JS is `app/src/main/assets/index.html`. Package
+  `com.chickenrun.game`, label `Chicken Run 3D`, minSdk 24, compileSdk/targetSdk **34**. Groovy build
+  (`build.gradle`, AGP **8.5.2**), so Gradle **8.7** matches — not the 8.9 used by Music/Assistant.
+- The zip loads three.js r128 from cdnjs. `three.min.js` is now **bundled** in `app/src/main/assets/` (603 KB) and
+  `MainActivity.shouldInterceptRequest` serves it from assets, so the game plays offline; the network fetch stays
+  as the fallback when the asset is absent.
+- No signing config in the zip: `assembleRelease` gives `app-release-unsigned.apk`, then `zipalign` + `apksigner
+  sign` with `/tmp/mabuild/debug.keystore` (same toolchain/SDK/build-tools 34 as Math Agent).
+- Icon is the zip's own vector `res/drawable/ic_launcher.xml` (sky/grass/white chicken); minSdk 24 renders it
+  fine, no PNG densities were added.
+- Deliverable: `chicken_run_3d/dist/chicken_run.apk` (0.2 MB), served at `/chicken_run.apk` (nginx `alias` →
+  `/srv/chicken`, bind-mounted from `chicken_run_3d/dist`) with the first card on `/builds.html`.
+- Verified: `apksigner verify` (CN=Android Debug), `aapt dump badging` (package, label, minSdk 24, targetSdk 34,
+  launchable `MainActivity`), and both `assets/index.html` (16,882 B) and `assets/three.min.js` (603,445 B) are
+  packaged. Runtime gameplay is not exercised — there is no emulator here.
+
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and

@@ -17,6 +17,7 @@ services:
       - ./mumin_wallet/dist:/srv/wallet:ro
       - ./mathagent/dist:/srv/mathagent:ro
       - ./ios26music/dist:/srv/music:ro
+      - ./chicken_run_3d/dist:/srv/chicken:ro
     depends_on:
       payments:
         condition: service_started
