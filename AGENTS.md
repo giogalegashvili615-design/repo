@@ -227,6 +227,10 @@ Notes learned the hard way:
 - The zip already carries its icon (adaptive only: `@color/ic_launcher_background` #FA2D48 + white note vector);
   minSdk 26 means no PNG fallback is needed. `app/build.gradle.kts` sets `signingConfig = debug` for release,
   so `assembleRelease` emits an **already signed** `app-release.apk` — no separate `zipalign`/`apksigner` step.
+- Theme: the app has a **Dark Mode** switch in **Library → Settings** (`html.dark` / `html.light` on `<html>`,
+  stored in `localStorage` under `theme` as `"dark"`/`"light"`; `system` — the default — follows
+  `prefers-color-scheme`). All dark colours live in the `html.dark` variable block; the `@media` blocks are only
+  the pre-JS fallback, so add new colours as variables there rather than new media queries.
 - Deliverable: `ios26music/dist/music.apk` (0.4 MB), served at `/music.apk` (nginx `alias` → `/srv/music`,
   bind-mounted from `ios26music/dist`) with the first card on `/builds.html`.
 - Verified: `apksigner verify` (CN=Android Debug), `aapt dump badging` (package, label `Music`, minSdk 26,
