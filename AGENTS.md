@@ -252,6 +252,23 @@ Notes learned the hard way:
   launchable `MainActivity`), and both `assets/index.html` (16,882 B) and `assets/three.min.js` (603,445 B) are
   packaged. Runtime gameplay is not exercised — there is no emulator here.
 
+## BeReal (WebView camera app, Kotlin)
+
+- Source: `bereal/` (from `BeRealAndroid.zip`): Kotlin `MainActivity` (`AppCompatActivity`) hosts the single-file
+  `app/src/main/assets/index.html` (51 KB) through `WebViewAssetLoader` — it must be served over
+  `https://appassets.androidplatform.net/assets/…`, otherwise `getUserMedia` has no secure context. It maps the
+  page's camera `PermissionRequest` onto the manifest `CAMERA` permission and implements a file chooser.
+  Package `com.example.bereal`, label `BeReal`, minSdk 26, compileSdk/targetSdk **34**.
+- Build: Kotlin 1.9.24 + AGP **8.5.2** → Gradle **8.7** (the same as Chicken Run / Math Agent), Compose is not
+  used. No signing config: `assembleRelease` → `app-release-unsigned.apk`, then `zipalign` + `apksigner sign` with
+  `/tmp/mabuild/debug.keystore`.
+- Icon is the zip's own adaptive icon (black background, white camera circle vector).
+- Deliverable: `bereal/dist/bereal.apk` (2.5 MB), served at `/bereal.apk` (nginx `alias` → `/srv/bereal`,
+  bind-mounted from `bereal/dist`) with the first card on `/builds.html`.
+- Verified: `apksigner verify` (CN=Android Debug), `aapt dump badging` (package, label, minSdk 26, targetSdk 34,
+  launchable `MainActivity`, `CAMERA` permission, adaptive icon `res/BW.xml`) and the packaged
+  `assets/index.html` is 51,159 bytes. Camera capture is not exercised — there is no emulator or camera here.
+
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and

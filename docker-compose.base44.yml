@@ -18,6 +18,7 @@ services:
       - ./mathagent/dist:/srv/mathagent:ro
       - ./ios26music/dist:/srv/music:ro
       - ./chicken_run_3d/dist:/srv/chicken:ro
+      - ./bereal/dist:/srv/bereal:ro
     depends_on:
       payments:
         condition: service_started
