@@ -19,6 +19,7 @@ services:
       - ./ios26music/dist:/srv/music:ro
       - ./chicken_run_3d/dist:/srv/chicken:ro
       - ./bereal/dist:/srv/bereal:ro
+      - ./dialer26/dist:/srv/dialer:ro
     depends_on:
       payments:
         condition: service_started

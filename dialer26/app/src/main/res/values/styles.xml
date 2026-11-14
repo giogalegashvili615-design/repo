@@ -1,0 +1,1 @@
+<resources><style name="Theme.Dialer26" parent="android:Theme.Material.Light.NoActionBar"><item name="android:windowBackground">@android:color/transparent</item></style></resources>

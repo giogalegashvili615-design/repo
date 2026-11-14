@@ -273,6 +273,39 @@ Notes learned the hard way:
   launchable `MainActivity`, `CAMERA` permission, adaptive icon `res/BW.xml`) and the packaged
   `assets/index.html` is 51,159 bytes. Camera capture is not exercised — there is no emulator or camera here.
 
+## Phone / Dialer26 (native Android, Kotlin + Jetpack Compose dialer)
+
+- Source: `dialer26/` (from `Dialer26.zip`): `MainActivity` (keypad, recents, contacts, favorites),
+  `InCallActivity` + `DialerInCallService` (in-call UI once the app holds the `ROLE_DIALER`), `Data.kt`
+  (contacts/call log/TelecomManager), `CallManager.kt`. Package `com.example.dialer26`, label `Phone`,
+  minSdk 29, compileSdk/targetSdk **34** (the zip said 35; only platform 34 is installed here).
+- The zip as delivered did **not** compile; two fixes are in the committed source:
+  `MainActivity.kt` used `isSystemInDarkTheme()` without
+  `import androidx.compose.foundation.isSystemInDarkTheme`, and `InCallActivity.kt` aliased the Compose
+  extension property `Icons.Filled.Call` (`import …filled.Call as CallIcon`) and then referenced it without a
+  receiver — it now uses `Icons.Filled.Call` directly.
+- Icon: the user-supplied artwork (green squircle with a translucent white handset on an off-white canvas) is
+  `dialer26/icon-source.png`; `dist/icon.png` is the 512 px version on the artwork's own gradient. The squircle
+  is cropped out of the canvas and its handset un-mixed from the green background into an alpha mask, so
+  `mipmap-*/ic_foreground.png` is the white handset alone at 108/162/216/324/432 — **scaled to 42.5 %** of the
+  canvas, because the handset spans 63.5 % of the artwork and would be clipped by circular launcher masks at
+  full bleed. `drawable/ic_launcher_background.xml` is the same vertical gradient (#58F074 → #27C142) sampled
+  from the image; `ic_launcher_monochrome.png` is the handset alone. `mipmap-*/ic_launcher{,_round}.png`
+  (48/72/96/144/192) are the gradient squircle with the handset at the artwork's own 63.5 % (round: 46 %, so
+  the tips survive the circular crop).
+- Build: no Gradle wrapper in the zip → Gradle **8.7** (AGP 8.5.2) from `/tmp/mabuild`, SDK at
+  `/tmp/mabuild/sdk` (JDK 17 in `eclipse-temurin:17-jdk-jammy`), with the
+  `-Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g"` heap flag. No signing config: `assembleRelease` →
+  `app-release-unsigned.apk`, then `zipalign` + `apksigner sign` with `/tmp/mabuild/debug.keystore`.
+- Deliverable: `dialer26/dist/dialer.apk` (~41 MB — Compose + `material-icons-extended`), served at
+  `/dialer.apk` (nginx `alias` → `/srv/dialer`, bind-mounted from `dialer26/dist`) as the first card on
+  `/builds.html`.
+- Verified: `apksigner verify` (CN=Android Debug), `aapt dump badging` (package, label `Phone`, minSdk 29,
+  targetSdk 34, launchable `MainActivity`, adaptive icon `res/BW.xml`), the APK carries all five icon
+  densities plus the 108–432 px foreground/monochrome set, the served file is byte-identical to the committed
+  APK, and every other `/…​.apk` route still answers 200. Runtime behaviour (placing calls, the dialer role,
+  contacts/call-log permissions) is not exercised — there is no emulator or telephony here.
+
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and
