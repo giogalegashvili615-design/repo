@@ -310,6 +310,25 @@ Notes learned the hard way:
   APK, and every other `/…​.apk` route still answers 200. Runtime behaviour (placing calls, the dialer role,
   contacts/call-log permissions) is not exercised — there is no emulator or telephony here.
 
+## Unipay (Android WebView card wallet)
+
+- Source: `unipay/` (from `Unipay-Android.zip`): Kotlin `MainActivity` (`AppCompatActivity`) hosts the single-file
+  `app/src/main/assets/index.html` (43.5 KB, light/dark card wallet with add / send / done sheets) through
+  `WebViewAssetLoader` at `https://appassets.androidplatform.net/assets/index.html` — a secure context, so
+  `crypto.subtle` and `localStorage` work. Back press closes an open sheet first (`backJs`), then exits.
+  Package `com.unipay.wallet`, label `Unipay`, minSdk 26, compileSdk/targetSdk **34**.
+- Build: the zip compiled as delivered (AGP **8.5.2**, Kotlin 1.9.24, no Gradle wrapper) → Gradle **8.7** from
+  `/tmp/mabuild`, SDK platform 34 / build-tools 34 in `eclipse-temurin:17-jdk-jammy`, with the
+  `-Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g"` heap flag. No signing config: `assembleRelease` →
+  `app-release-unsigned.apk`, then `zipalign` + `apksigner sign` with `/tmp/mabuild/debug.keystore`.
+- Icon is the zip's own adaptive icon (blue `@color/ic_bg` #1F5BFF + yellow-ring vector `ic_fg.xml`); minSdk 26
+  needs no PNG fallback.
+- Deliverable: `unipay/dist/unipay.apk` (2.5 MB, debug-key signed), served at `/unipay.apk` (nginx `alias` →
+  `/srv/unipay`, bind-mounted from `unipay/dist`) with the first card on `/builds.html`.
+- Verified: `apksigner verify` (CN=Android Debug), `aapt dump badging` (package, label `Unipay`, minSdk 26,
+  targetSdk 34, launchable `MainActivity`, adaptive icon `res/BW.xml`) and `assets/index.html` is packaged.
+  Runtime behaviour is not exercised — there is no emulator here.
+
 ## Verifying the preview
 
 `curl -sS http://localhost:3000/` must return the download page and
