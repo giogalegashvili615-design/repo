@@ -8,6 +8,14 @@ android {
     compileSdk = 34
     defaultConfig { applicationId = "com.example.dialer26"; minSdk = 29; targetSdk = 34; versionCode = 1; versionName = "1.0" }
     buildFeatures { compose = true }
+    buildTypes {
+        release {
+            // material-icons-extended alone is ~35 MB of dex; R8 drops the unused icons.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
 }

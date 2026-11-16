@@ -297,7 +297,11 @@ Notes learned the hard way:
   `/tmp/mabuild/sdk` (JDK 17 in `eclipse-temurin:17-jdk-jammy`), with the
   `-Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g"` heap flag. No signing config: `assembleRelease` →
   `app-release-unsigned.apk`, then `zipalign` + `apksigner sign` with `/tmp/mabuild/debug.keystore`.
-- Deliverable: `dialer26/dist/dialer.apk` (~41 MB — Compose + `material-icons-extended`), served at
+- **Size**: `material-icons-extended` alone is ~35 MB of dex, so the release build enables R8
+  (`isMinifyEnabled` + `isShrinkResources`, rules in `app/proguard-rules.pro`) — the unused icons are stripped and
+  the APK is ~2.0 MB instead of ~41 MB. Keep minification on: at 41 MB the APK is too big for this repo's git push
+  limit, which is why only the minified build has a permanent GitHub URL.
+- Deliverable: `dialer26/dist/dialer.apk` (~2.0 MB, R8-minified), served at
   `/dialer.apk` (nginx `alias` → `/srv/dialer`, bind-mounted from `dialer26/dist`) as the first card on
   `/builds.html`.
 - Verified: `apksigner verify` (CN=Android Debug), `aapt dump badging` (package, label `Phone`, minSdk 29,
